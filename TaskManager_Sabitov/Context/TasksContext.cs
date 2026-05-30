@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TaskManager_Sabitov.Classes.Database
 
+using TaskManager_Sabitov.Models;
+
 namespace TaskManager_Sabitov.Context
 {
     public class TasksContext : DbContext
     {
-        public DbSet<Task> Tasks { get; set; }
+        public DbSet<Tasks> Tasks { get; set; }
 
         public TasksContext()
         {
