@@ -1,5 +1,4 @@
-﻿// Models/Priority.cs
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using TaskManager_Sabitov.Classes;
 
