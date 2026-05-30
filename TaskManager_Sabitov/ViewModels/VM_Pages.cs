@@ -1,12 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TaskManager_Sabitov.Classes;
 
 namespace TaskManager_Sabitov.ViewModels
 {
-    class VM_Pages
+    public class VM_Pages : Notification 
     {
+        public VM_Tasks VMTasks = new VM_Tasks();
+        public VM_Pages()
+        {
+            MainWindow.Instance.OpenPage(new View.Main(VMTasks));
+        }
+        public RealyCommand OnClose
+        {
+            get
+            {
+                return new RealyCommand(obj =>
+                {
+                    MainWindow.Instance.Close();
+                });
+            }
+        }
     }
 }
