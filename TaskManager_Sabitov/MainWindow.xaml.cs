@@ -1,13 +1,6 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using TaskManager_Sabitov.ViewModels;
 
 namespace TaskManager_Sabitov
 {
@@ -16,9 +9,16 @@ namespace TaskManager_Sabitov
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; private set; }
         public MainWindow()
         {
             InitializeComponent();
+            Instance = this;
+            DataContext = new VM_Pages();
+        }
+        public void OpenPage(Page page)
+        {
+            frame.Navigate(page);
         }
     }
 }

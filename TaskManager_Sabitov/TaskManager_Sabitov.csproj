@@ -8,4 +8,21 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\ic_btnExit.png" />
+    <None Remove="Images\ic_taskComplite.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Classes\Database\" />
+    <Folder Include="Models\" />
+    <Folder Include="Context\" />
+    <Folder Include="View\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\ic_btnExit.png" />
+    <Resource Include="Images\ic_taskComplite.png" />
+  </ItemGroup>
+
 </Project>
