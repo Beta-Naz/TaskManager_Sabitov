@@ -2,23 +2,26 @@
 using System.Windows;
 using TaskManager_Sabitov.Classes;
 using Schema = System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskManager_Sabitov.Models
 {
     public class Tasks : Notification
     {
         public int Id { get; set; }
+
         private string _name;
+        [Required]
+        [MaxLength(50)]
         public string Name
         {
             get => _name;
             set
             {
-                Match match = Regex.Match(value, "^.{1,50}$");
-                if (!match.Success)
+                if (string.IsNullOrWhiteSpace(value) || value.Length > 50)
                 {
                     MessageBox.Show("Наименование не должно быть пустым, и не более 50 символов",
-                        "Не корректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        "Некорректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
@@ -27,35 +30,48 @@ namespace TaskManager_Sabitov.Models
                 }
             }
         }
-        private string _priority;
-        public string Priority
+
+        private int _priorityId;
+        [Required]
+        public int PriorityId
+        {
+            get => _priorityId;
+            set
+            {
+                _priorityId = value;
+                OnPropertyChanged("PriorityId");
+                OnPropertyChanged("PriorityName");
+            }
+        }
+
+        private Priority _priority;
+        public virtual Priority Priority
         {
             get => _priority;
             set
             {
-                Match match = Regex.Match(value, "^.{1,30}$");
-                if (!match.Success)
-                {
-                    MessageBox.Show("Приоритет не должно быть пустым, и не более 40 символов",
-                        "Не корректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    _name = value;
-                    OnPropertyChanged("Priority");
-                }
+                _priority = value;
+                if (value != null)
+                    PriorityId = value.Id;
+                OnPropertyChanged("Priority");
+                OnPropertyChanged("PriorityName");
             }
         }
+
+        [Schema.NotMapped]
+        public string PriorityName => Priority?.Name ?? "Не указан";
+
         private DateTime _dateExecute;
+        [Required]
         public DateTime DateExecute
         {
             get => _dateExecute;
             set
             {
-                if(value.Date < DateTime.Now.Date)
+                if (value.Date < DateTime.Now.Date)
                 {
                     MessageBox.Show("Дата выполнения не может быть меньше текущей",
-                       "Не корректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
+                       "Некорректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
@@ -64,17 +80,18 @@ namespace TaskManager_Sabitov.Models
                 }
             }
         }
+
         private string _comment;
+        [MaxLength(1000)]
         public string Comment
         {
             get => _comment;
             set
             {
-                Match match = Regex.Match(value, "^.{1,1000}$");
-                if (!match.Success)
+                if (value != null && value.Length > 1000)
                 {
-                    MessageBox.Show("Комментарий не должен быть пустым, и не более 1000 символов.",
-                        "Не корректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Комментарий не более 1000 символов.",
+                        "Некорректный ввод значений", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
@@ -83,6 +100,7 @@ namespace TaskManager_Sabitov.Models
                 }
             }
         }
+
         private bool _done;
         public bool Done
         {
@@ -94,8 +112,10 @@ namespace TaskManager_Sabitov.Models
                 OnPropertyChanged("IsDoneText");
             }
         }
+
         [Schema.NotMapped]
-        private bool _isEnable;
+        private bool _isEnable = false;
+
         [Schema.NotMapped]
         public bool IsEnable
         {
@@ -107,6 +127,7 @@ namespace TaskManager_Sabitov.Models
                 OnPropertyChanged("IsEnableText");
             }
         }
+
         [Schema.NotMapped]
         public string IsEnableText
         {
@@ -116,6 +137,7 @@ namespace TaskManager_Sabitov.Models
                 else return "Изменить";
             }
         }
+
         [Schema.NotMapped]
         public string IsDoneText
         {
@@ -125,6 +147,7 @@ namespace TaskManager_Sabitov.Models
                 else return "Выполнено";
             }
         }
+
         [Schema.NotMapped]
         public RealyCommand OnEdit
         {
@@ -135,11 +158,14 @@ namespace TaskManager_Sabitov.Models
                     IsEnable = !IsEnable;
                     if (!IsEnable)
                     {
-                        ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks.TaskContext.SaveChanges();
+                        var vm = ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks;
+                        vm.TaskContext.SaveChanges();
+                        vm.UpdateItems();
                     }
                 });
             }
         }
+
         [Schema.NotMapped]
         public RealyCommand OnDelete
         {
@@ -150,13 +176,15 @@ namespace TaskManager_Sabitov.Models
                     if (MessageBox.Show("Вы уверены что хотите удалить задачу", "Предупреждение",
                         MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
-                        ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks.Tasks.Remove(this);
-                        ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks.TaskContext.Remove(this);
-                        ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks.TaskContext.SaveChanges();
+                        var vm = ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks;
+                        vm.TaskContext.Tasks.Remove(this);
+                        vm.TaskContext.SaveChanges();
+                        vm.UpdateItems();
                     }
                 });
             }
         }
+
         [Schema.NotMapped]
         public RealyCommand OnDone
         {
@@ -165,6 +193,9 @@ namespace TaskManager_Sabitov.Models
                 return new RealyCommand(obj =>
                 {
                     Done = !Done;
+                    var vm = ((ViewModels.VM_Pages)MainWindow.Instance.DataContext).VMTasks;
+                    vm.TaskContext.SaveChanges();
+                    vm.UpdateItems();
                 });
             }
         }

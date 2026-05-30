@@ -28,7 +28,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="270"/>
             </Grid.ColumnDefinitions>
-            <Grid Margin="10" Height="60" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Grid Margin="10" Height="60" VerticalAlignment="Top">
                 <Grid.Effect>
                     <DropShadowEffect Opacity="0.1"/>
                 </Grid.Effect>
@@ -46,8 +46,12 @@
                     <DropShadowEffect Opacity="0.1"/>
                 </Grid.Effect>
                 <Label Content="Приоритет:" VerticalAlignment="Top" Margin="10,0,10,0"/>
-                <TextBox
-                    Text="{Binding Priority}"
+                <ComboBox 
+                    ItemsSource="{Binding DataContext.Priorities, 
+                                          RelativeSource={RelativeSource AncestorType=Page}}"
+                    SelectedValue="{Binding PriorityId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedValuePath="Id"
+                    DisplayMemberPath="Name"
                     IsEnabled="{Binding IsEnable}"
                     VerticalContentAlignment="Center"
                     Margin="10,25,10,0"

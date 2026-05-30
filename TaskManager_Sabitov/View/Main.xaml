@@ -3,38 +3,108 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-       xmlns:element="clr-namespace:TaskManager_Sabitov.View.Items"
+      xmlns:element="clr-namespace:TaskManager_Sabitov.View.Items"
       xmlns:local="clr-namespace:TaskManager_Sabitov.View"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Main">
 
     <Page.Resources>
-        <Style TargetType="Button">
+        <Style TargetType="Button" x:Key="Update">
             <Setter Property="Background" Value="#ff2dd618" />
             <Setter Property="BorderBrush" Value="#ff2dd618" />
             <Setter Property="Foreground" Value="White" />
         </Style>
+
+        <Style TargetType="Button" x:Key="SortButton">
+            <Setter Property="Background" Value="#2196F3" />
+            <Setter Property="BorderBrush" Value="#2196F3" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="25" />
+        </Style>
+
+        <Style TargetType="Border" x:Key="BorderSearch">
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="0" Opacity="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect ShadowDepth="0" 
+                          BlurRadius="5" 
+                          Opacity="0.2" 
+                          Color="#2196F3"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Page.Resources>
 
     <Grid>
-        <ListView ItemsSource="{Binding Items}" 
+        <Grid Height="40" VerticalAlignment="Top" Background="LightGreen">
+            <Border VerticalAlignment="Center" 
+                Margin="10,0,500,0" 
+                Height="30" 
+                CornerRadius="17.5"
+                Background="White"
+                BorderThickness="1"
+                Style="{StaticResource BorderSearch}">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🔍" 
+                       Margin="12,0,8,0"
+                       FontSize="14"
+                       Opacity="0.4"/>
+
+                        <TextBox
+                            Width="200"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="11"
+                            Text="{Binding SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            VerticalContentAlignment="Center">
+                        </TextBox>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <ListView ItemsSource="{Binding Tasks}" 
                HorizontalContentAlignment="Stretch" 
-               Margin="0,0,0,40">
+               Margin="0,40,0,40">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <element:Item DataContext="{Binding}"/>
+                    <element:Item />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
         <Button Content="Добавить" 
-             Width="70" 
-             Height="25" 
-             Margin="0,0,10,10" 
-             VerticalAlignment="Bottom" 
-             HorizontalAlignment="Right" 
-             Command="{Binding NewItem}">
+                Style="{StaticResource Update}"
+                Width="70" 
+                Height="25" 
+                Margin="0,0,10,10" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Right" 
+                Command="{Binding OnAddTask}">
+            <Button.Effect>
+                <DropShadowEffect Direction="270" BlurRadius="5" ShadowDepth="2" Opacity="0.5" />
+            </Button.Effect>
+        </Button>
+
+        <Button Content="{Binding TextBtnPriority}" 
+                Style="{StaticResource SortButton}"
+                Margin="0,0,90,10" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Right" 
+                Command="{Binding OnSetPriority}">
             <Button.Effect>
                 <DropShadowEffect Direction="270" BlurRadius="5" ShadowDepth="2" Opacity="0.5" />
             </Button.Effect>

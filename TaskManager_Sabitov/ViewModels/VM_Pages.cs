@@ -11,15 +11,10 @@ namespace TaskManager_Sabitov.ViewModels
             MainWindow.Instance.OpenPage(new View.Main(VMTasks));
         }
 
+        private RealyCommand _onClose;
         public RealyCommand OnClose
         {
-            get
-            {
-                return new RealyCommand(obj =>
-                {
-                    MainWindow.Instance.Close();
-                });
-            }
+            get => _onClose ??= new RealyCommand(obj => MainWindow.Instance.Close());
         }
     }
 }
